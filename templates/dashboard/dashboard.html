@@ -1,0 +1,70 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load humanize %}
+
+{% block dash_title %}Welcome, {{ user.first_name|default:user.username }}{% endblock %}
+{% block dash_subtitle %}Here's what's happening with your AquaCare account.{% endblock %}
+
+{% block dash_content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3"><div class="card-aqua p-3"><div class="small text-muted-soft">Orders</div><div class="h3 mb-0 text-aqua">{{ orders_count }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card-aqua p-3"><div class="small text-muted-soft">Service requests</div><div class="h3 mb-0 text-aqua">{{ service_count }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card-aqua p-3"><div class="small text-muted-soft">Active AMC</div><div class="h3 mb-0 text-aqua">{{ amc_subscriptions.count }}</div></div></div>
+  <div class="col-6 col-lg-3"><div class="card-aqua p-3"><div class="small text-muted-soft">Quotations</div><div class="h3 mb-0 text-aqua">{{ quotations|length }}</div></div></div>
+</div>
+
+<div class="card-aqua p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h6 mb-0">Recent orders</h2>
+    <a href="{% url 'accounts:my_orders' %}" class="small text-aqua">View all</a>
+  </div>
+  {% if orders %}
+  <div class="table-responsive"><table class="table align-middle small mb-0">
+    <thead><tr><th>Order ID</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td class="fw-semibold">{{ order.order_id }}</td>
+        <td>{{ order.created_at|date:"d M Y" }}</td>
+        <td>₹{{ order.total_amount|floatformat:0|intcomma }}</td>
+        <td>{{ order.get_payment_status_display }}</td>
+        <td><span class="badge bg-{{ order.status_color }}">{{ order.get_status_display }}</span></td>
+        <td><a href="{% url 'orders:order_detail' order.order_id %}" class="text-aqua">Details</a></td>
+      </tr>
+      {% endfor %}
+    </tbody></table></div>
+  {% else %}
+    <p class="small text-muted-soft mb-0">No orders yet. <a href="{% url 'products:product_list' %}" class="text-aqua">Browse products</a></p>
+  {% endif %}
+</div>
+
+<div class="card-aqua p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h6 mb-0">Recent service requests</h2>
+    <a href="{% url 'accounts:my_services' %}" class="small text-aqua">View all</a>
+  </div>
+  {% if service_requests %}
+  <div class="table-responsive"><table class="table align-middle small mb-0">
+    <thead><tr><th>Reference</th><th>Type</th><th>Product</th><th>Date</th><th>Technician</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for sr in service_requests %}
+      <tr>
+        <td class="fw-semibold">{{ sr.reference }}</td>
+        <td>{{ sr.get_request_type_display }}</td>
+        <td>{{ sr.product.name|default:"—" }}</td>
+        <td>{{ sr.preferred_date|date:"d M Y" }}</td>
+        <td>{{ sr.technician.name|default:"Not assigned" }}</td>
+        <td><span class="badge bg-{{ sr.status_color }}">{{ sr.get_status_display }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody></table></div>
+  {% else %}
+    <p class="small text-muted-soft mb-0">No service requests yet. <a href="{% url 'services:book_repair' %}" class="text-aqua">Book a service</a></p>
+  {% endif %}
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4"><a href="{% url 'services:book_installation' %}" class="card-aqua p-3 d-block text-dark text-center"><i class="bi bi-wrench-adjustable fs-3 text-aqua"></i><div class="fw-semibold mt-1">Book installation</div></a></div>
+  <div class="col-md-4"><a href="{% url 'services:book_repair' %}" class="card-aqua p-3 d-block text-dark text-center"><i class="bi bi-tools fs-3 text-aqua"></i><div class="fw-semibold mt-1">Request repair</div></a></div>
+  <div class="col-md-4"><a href="{% url 'quotations:request_quote' %}" class="card-aqua p-3 d-block text-dark text-center"><i class="bi bi-file-earmark-text fs-3 text-aqua"></i><div class="fw-semibold mt-1">Get a quote</div></a></div>
+</div>
+{% endblock %}

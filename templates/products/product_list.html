@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+      {% if category %}<li class="breadcrumb-item active">{{ category.name }}</li>{% endif %}
+    </ol></nav>
+    <h1>{% if category %}{{ category.name }}{% else %}Our water purification products{% endif %}</h1>
+    <p class="mb-0 opacity-75">
+      {% if category %}{{ category.description|default:"Explore this range with full specifications and pricing." }}
+      {% else %}Domestic, commercial and industrial systems — specifications, pricing and instant booking.{% endif %}
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <!-- ---------- Filters sidebar ---------- -->
+      <div class="col-lg-3">
+        <form method="get" class="card-aqua p-4 sticky-top" style="top:90px">
+          <h2 class="h6 mb-3"><i class="bi bi-funnel me-1 text-aqua"></i>Search &amp; filter</h2>
+
+          <label class="form-label small fw-semibold" for="q">Keyword</label>
+          <input type="search" class="form-control mb-3" id="q" name="q"
+                 value="{{ request.GET.q|default:'' }}" placeholder="Name, code, technology…">
+
+          {% if not category %}
+          <label class="form-label small fw-semibold" for="category">Category</label>
+          <select class="form-select mb-3" id="category" name="category">
+            <option value="">All categories</option>
+            {% for c in categories %}
+              <option value="{{ c.slug }}" {% if request.GET.category == c.slug %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+
+          <label class="form-label small fw-semibold" for="technology">Technology</label>
+          <select class="form-select mb-3" id="technology" name="technology">
+            <option value="">Any technology</option>
+            {% for value, label in technologies %}
+              <option value="{{ value }}" {% if request.GET.technology == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+
+          <label class="form-label small fw-semibold" for="capacity">Capacity</label>
+          <input type="text" class="form-control mb-3" id="capacity" name="capacity"
+                 value="{{ request.GET.capacity|default:'' }}" placeholder="e.g. 15 LPH">
+
+          <label class="form-label small fw-semibold">Price range (₹)</label>
+          <div class="d-flex gap-2 mb-3">
+            <input type="number" min="0" class="form-control" name="min_price" placeholder="Min" value="{{ request.GET.min_price|default:'' }}">
+            <input type="number" min="0" class="form-control" name="max_price" placeholder="Max" value="{{ request.GET.max_price|default:'' }}">
+          </div>
+
+          <label class="form-label small fw-semibold" for="sort">Sort by</label>
+          <select class="form-select mb-3" id="sort" name="sort">
+            <option value="">Recommended</option>
+            <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
+            <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
+            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest first</option>
+            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name (A–Z)</option>
+          </select>
+
+          <button class="btn btn-aqua w-100 mb-2" type="submit">Apply filters</button>
+          <a class="btn btn-light border w-100" href="{% if category %}{{ category.get_absolute_url }}{% else %}{% url 'products:product_list' %}{% endif %}">Reset</a>
+        </form>
+      </div>
+
+      <!-- ---------- Results ---------- -->
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <p class="text-muted-soft mb-0">{{ total_count }} product{{ total_count|pluralize }} found</p>
+          <a href="{% url 'quotations:request_quote' %}" class="btn btn-outline-aqua btn-sm">Need a custom system? Get a quote</a>
+        </div>
+
+        {% if products %}
+          <div class="row g-4">
+            {% for product in products %}
+              <div class="col-sm-6 col-xl-4">{% include "partials/product_card.html" %}</div>
+            {% endfor %}
+          </div>
+
+          {% if page_obj.has_other_pages %}
+          <nav class="mt-5" aria-label="Product pages">
+            <ul class="pagination justify-content-center">
+              {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Previous</a></li>
+              {% else %}<li class="page-item disabled"><span class="page-link">Previous</span></li>{% endif %}
+              {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                  <a class="page-link" href="?page={{ num }}{% if querystring %}&{{ querystring }}{% endif %}">{{ num }}</a>
+                </li>
+              {% endfor %}
+              {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Next</a></li>
+              {% else %}<li class="page-item disabled"><span class="page-link">Next</span></li>{% endif %}
+            </ul>
+          </nav>
+          {% endif %}
+        {% else %}
+          <div class="card-aqua p-5 text-center">
+            <i class="bi bi-search fs-1 text-aqua"></i>
+            <h2 class="h5 mt-3">No products match your search</h2>
+            <p class="text-muted-soft">Try removing a filter, or tell us what you need and we'll build a quote.</p>
+            <div>
+              <a href="{% url 'products:product_list' %}" class="btn btn-outline-aqua me-2">Clear filters</a>
+              <a href="{% url 'quotations:request_quote' %}" class="btn btn-aqua">Request a quote</a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

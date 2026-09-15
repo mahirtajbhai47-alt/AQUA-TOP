@@ -1,0 +1,81 @@
+{% load static %}
+<footer class="footer mt-auto">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <h5 class="text-white d-flex align-items-center mb-3">
+          <span class="brand-drop"><i class="bi bi-droplet-fill"></i></span>{{ company.name }}
+        </h5>
+        <p class="small">
+          {{ company.about_short|default:"AquaCare designs, manufactures and services advanced water purification systems for homes, offices and industries — backed by certified technicians and genuine spare parts." }}
+        </p>
+        <div class="mt-3">
+          {% if company.facebook %}<a class="social-icon" href="{{ company.facebook }}" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+          {% if company.instagram %}<a class="social-icon" href="{{ company.instagram }}" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+          {% if company.twitter %}<a class="social-icon" href="{{ company.twitter }}" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>{% endif %}
+          {% if company.linkedin %}<a class="social-icon" href="{{ company.linkedin }}" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
+          {% if company.youtube %}<a class="social-icon" href="{{ company.youtube }}" aria-label="YouTube"><i class="bi bi-youtube"></i></a>{% endif %}
+        </div>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6>Company</h6>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><a href="{% url 'core:about' %}">About Us</a></li>
+          <li><a href="{% url 'core:contact' %}">Contact</a></li>
+          <li><a href="{% url 'core:faq' %}">FAQs</a></li>
+          <li><a href="{% url 'core:contact' %}?subject=Careers">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6>Products</h6>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><a href="{% url 'products:product_list' %}?technology=RO%2BUV">Domestic RO</a></li>
+          <li><a href="{% url 'products:product_list' %}?q=commercial">Commercial RO</a></li>
+          <li><a href="{% url 'products:product_list' %}?q=industrial">Industrial RO</a></li>
+          <li><a href="{% url 'products:product_list' %}?q=dispenser">Water Dispensers</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6>Services</h6>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><a href="{% url 'services:book_installation' %}">Installation</a></li>
+          <li><a href="{% url 'services:book_repair' %}">Repair</a></li>
+          <li><a href="{% url 'services:book_maintenance' %}">Maintenance</a></li>
+          <li><a href="{% url 'services:amc_plans' %}">AMC Plans</a></li>
+          <li><a href="{% url 'services:track' %}">Track Service</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6>Customer</h6>
+        <ul class="list-unstyled d-grid gap-2 small">
+          <li><a href="{% url 'accounts:login' %}">Login</a></li>
+          <li><a href="{% url 'accounts:register' %}">Register</a></li>
+          <li><a href="{% url 'accounts:my_orders' %}">My Orders</a></li>
+          <li><a href="{% url 'accounts:my_services' %}">My Services</a></li>
+          <li><a href="{% url 'quotations:request_quote' %}">Get a Quote</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row g-3 mt-4 small">
+      {% if company.address %}
+      <div class="col-md-4"><i class="bi bi-geo-alt me-2 text-info"></i>{{ company.address|linebreaksbr }}</div>
+      {% endif %}
+      {% if company.phone %}
+      <div class="col-md-4"><i class="bi bi-telephone me-2 text-info"></i><a href="tel:{{ company.phone }}">{{ company.phone }}</a></div>
+      {% endif %}
+      {% if company.email %}
+      <div class="col-md-4"><i class="bi bi-envelope me-2 text-info"></i><a href="mailto:{{ company.email }}">{{ company.email }}</a></div>
+      {% endif %}
+    </div>
+
+    <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center">
+      <span class="small">&copy; 2026 AquaCare. All Rights Reserved.</span>
+      <span class="small">Built with Django &middot; <a href="{% url 'core:faq' %}">Support</a> &middot; <a href="/sitemap.xml">Sitemap</a></span>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item active">AMC Plans</li></ol></nav>
+    <h1>Annual maintenance contracts</h1>
+    <p class="mb-0 opacity-75">Predictable yearly pricing for servicing, filters and priority support.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      {% for plan in plans %}
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="card-aqua p-4 h-100 d-flex flex-column {% if plan.is_popular %}border-primary{% endif %}">
+          {% if plan.is_popular %}<span class="badge bg-primary align-self-start mb-2">Most popular</span>{% endif %}
+          <h2 class="h4">{{ plan.name }}</h2>
+          <div class="my-2">
+            <span class="display-5 fw-bold text-aqua">₹{{ plan.price|floatformat:0|intcomma }}</span>
+            <span class="text-muted-soft">/ {{ plan.duration_months }} months</span>
+          </div>
+          <p class="small text-muted-soft">{{ plan.description }}</p>
+          <ul class="list-unstyled small d-grid gap-2 mb-4">
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>{{ plan.number_of_services }} scheduled service visits</li>
+            <li><i class="bi {% if plan.filter_replacement %}bi-check-circle-fill text-success{% else %}bi-x-circle text-muted{% endif %} me-2"></i>Filter replacement included</li>
+            <li><i class="bi {% if plan.emergency_service %}bi-check-circle-fill text-success{% else %}bi-x-circle text-muted{% endif %} me-2"></i>Emergency breakdown support</li>
+            {% for f in plan.feature_list %}<li><i class="bi bi-check-circle-fill text-success me-2"></i>{{ f }}</li>{% endfor %}
+          </ul>
+          <a href="{% url 'services:amc_subscribe_plan' plan.slug %}" class="btn {% if plan.is_popular %}btn-aqua{% else %}btn-outline-aqua{% endif %} mt-auto">Subscribe to {{ plan.name }}</a>
+        </div>
+      </div>
+      {% empty %}
+        <p class="text-muted-soft text-center">AMC plans will be published shortly.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

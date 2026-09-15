@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item active">Contact</li></ol></nav>
+    <h1>Contact AquaCare</h1>
+    <p class="mb-0 opacity-75">Sales, installation and service support — we reply within one business day.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4 mb-5">
+      <div class="col-md-6 col-lg-3 reveal"><div class="card-aqua p-4 h-100">
+        <div class="icon-circle"><i class="bi bi-geo-alt"></i></div>
+        <h2 class="h6">Our office</h2>
+        <p class="small text-muted-soft mb-0">{{ company.address|default:"Add your company address in the admin panel."|linebreaksbr }}</p>
+      </div></div>
+      <div class="col-md-6 col-lg-3 reveal"><div class="card-aqua p-4 h-100">
+        <div class="icon-circle"><i class="bi bi-telephone"></i></div>
+        <h2 class="h6">Call us</h2>
+        <p class="small text-muted-soft mb-0">
+          {% if company.phone %}<a href="tel:{{ company.phone }}">{{ company.phone }}</a><br>{% endif %}
+          {% if company.alternate_phone %}<a href="tel:{{ company.alternate_phone }}">{{ company.alternate_phone }}</a>{% endif %}
+        </p>
+      </div></div>
+      <div class="col-md-6 col-lg-3 reveal"><div class="card-aqua p-4 h-100">
+        <div class="icon-circle"><i class="bi bi-envelope"></i></div>
+        <h2 class="h6">Email</h2>
+        <p class="small text-muted-soft mb-0">{% if company.email %}<a href="mailto:{{ company.email }}">{{ company.email }}</a>{% endif %}</p>
+      </div></div>
+      <div class="col-md-6 col-lg-3 reveal"><div class="card-aqua p-4 h-100">
+        <div class="icon-circle"><i class="bi bi-clock"></i></div>
+        <h2 class="h6">Business hours</h2>
+        <p class="small text-muted-soft mb-0">{{ company.business_hours }}</p>
+      </div></div>
+    </div>
+
+    <div class="row g-5">
+      <div class="col-lg-7">
+        <div class="form-panel">
+          <h2 class="h4 mb-1">Send us a message</h2>
+          <p class="text-muted-soft small mb-4">Every message is stored in our system and assigned to a team member.</p>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.name.id_for_label }}">Full name</label>
+                {{ form.name }}{% for e in form.name.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.phone.id_for_label }}">Phone</label>
+                {{ form.phone }}{% for e in form.phone.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}{% for e in form.email.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.subject.id_for_label }}">Subject</label>
+                {{ form.subject }}{% for e in form.subject.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.message.id_for_label }}">Message</label>
+                {{ form.message }}{% for e in form.message.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+            </div>
+            <button type="submit" class="btn btn-aqua mt-4"><i class="bi bi-send me-1"></i>Send message</button>
+            {% if company.whatsapp %}
+            <a class="btn btn-outline-aqua mt-4" target="_blank" rel="noopener"
+               href="https://wa.me/{{ company.whatsapp }}"><i class="bi bi-whatsapp me-1"></i>Chat on WhatsApp</a>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card-aqua p-0 overflow-hidden mb-4">
+          <iframe title="AquaCare location map" style="border:0;width:100%;height:320px" loading="lazy"
+                  allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+                  src="{{ company.map_embed_url|default:'https://www.google.com/maps?q=India&output=embed' }}"></iframe>
+        </div>
+        {% if faqs %}
+        <div class="card-aqua p-4">
+          <h2 class="h6 mb-3">Quick answers</h2>
+          <div class="accordion" id="contactFaq">
+            {% for faq in faqs %}
+            <div class="accordion-item">
+              <h3 class="accordion-header">
+                <button class="accordion-button collapsed small" type="button" data-bs-toggle="collapse" data-bs-target="#cf{{ faq.id }}">{{ faq.question }}</button>
+              </h3>
+              <div id="cf{{ faq.id }}" class="accordion-collapse collapse" data-bs-parent="#contactFaq">
+                <div class="accordion-body small text-muted-soft">{{ faq.answer }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

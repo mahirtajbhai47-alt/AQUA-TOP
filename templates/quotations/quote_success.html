@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container"><div class="row justify-content-center"><div class="col-lg-6">
+    <div class="card-aqua p-5 text-center">
+      <i class="bi bi-file-earmark-check display-3 text-success"></i>
+      <h1 class="h3 mt-3">Quotation request received</h1>
+      <p class="text-muted-soft">Our sales engineer will review your requirement and contact you within one business day.</p>
+      <div>
+        <a href="{% url 'products:product_list' %}" class="btn btn-aqua me-2">Browse products</a>
+        <a href="{% url 'core:home' %}" class="btn btn-outline-aqua">Back to home</a>
+      </div>
+    </div>
+  </div></div></div>
+</section>
+{% endblock %}

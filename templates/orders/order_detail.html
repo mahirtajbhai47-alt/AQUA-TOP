@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Order {{ order.order_id }}</h1>
+    <p class="mb-0 opacity-75">Placed {{ order.created_at|date:"d M Y, H:i" }}</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card-aqua p-4">
+          <h2 class="h6 mb-3">Items</h2>
+          <div class="table-responsive"><table class="table align-middle small mb-0">
+            <thead><tr><th>Product</th><th>Price</th><th>Qty</th><th class="text-end">Subtotal</th></tr></thead>
+            <tbody>
+              {% for item in order.items.all %}
+              <tr>
+                <td>{% if item.product %}<a href="{{ item.product.get_absolute_url }}" class="text-dark">{{ item.product_name }}</a>{% else %}{{ item.product_name }}{% endif %}</td>
+                <td>₹{{ item.price|floatformat:0|intcomma }}</td>
+                <td>{{ item.quantity }}</td>
+                <td class="text-end">₹{{ item.subtotal|floatformat:0|intcomma }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot><tr><th colspan="3" class="text-end">Total</th><th class="text-end text-aqua">₹{{ order.total_amount|floatformat:0|intcomma }}</th></tr></tfoot>
+          </table></div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card-aqua p-4 mb-3">
+          <h2 class="h6 mb-3">Status</h2>
+          <p class="mb-2"><span class="badge bg-{{ order.status_color }}">{{ order.get_status_display }}</span></p>
+          <div class="small text-muted-soft">Payment: {{ order.get_payment_method_display }} ({{ order.get_payment_status_display }})</div>
+        </div>
+        <div class="card-aqua p-4">
+          <h2 class="h6 mb-3">Delivery address</h2>
+          <address class="small text-muted-soft mb-0">
+            {{ order.full_name }}<br>{{ order.address }}<br>{{ order.city }} {{ order.state }} {{ order.pincode }}<br>
+            <i class="bi bi-telephone me-1"></i>{{ order.phone }}
+          </address>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

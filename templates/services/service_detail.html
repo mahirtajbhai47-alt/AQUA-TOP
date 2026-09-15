@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'services:service_list' %}">Services</a></li>
+      <li class="breadcrumb-item active">{{ service.name }}</li></ol></nav>
+    <h1>{{ service.name }}</h1>
+    <p class="mb-0 opacity-75">{{ service.short_description }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        {% if service.image %}
+          <img src="{{ service.image.url }}" class="img-fluid rounded-4 mb-4" alt="{{ service.name }}"
+               data-fallback="{% static 'images/placeholder.svg' %}">
+        {% endif %}
+        <div class="text-muted-soft">{{ service.description|linebreaks|default:service.short_description }}</div>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a href="{% url 'services:book_installation' %}" class="btn btn-aqua">Book installation</a>
+          <a href="{% url 'services:book_maintenance' %}" class="btn btn-outline-aqua">Book maintenance</a>
+          <a href="{% url 'services:book_repair' %}" class="btn btn-outline-aqua">Request repair</a>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card-aqua p-4 mb-4">
+          <h2 class="h6 mb-3">Service summary</h2>
+          {% if service.starting_price %}
+            <p class="mb-2">Starting from <strong class="text-aqua">₹{{ service.starting_price|floatformat:0|intcomma }}</strong></p>
+          {% endif %}
+          <p class="small text-muted-soft mb-3">Final charges are confirmed by the technician before any work begins.</p>
+          <a href="{% url 'quotations:request_quote' %}" class="btn btn-aqua w-100">Get a quote</a>
+        </div>
+        {% if other_services %}
+        <div class="card-aqua p-4">
+          <h2 class="h6 mb-3">Other services</h2>
+          <ul class="list-unstyled d-grid gap-2 small mb-0">
+            {% for s in other_services %}
+              <li><a href="{{ s.get_absolute_url }}" class="text-aqua"><i class="bi bi-arrow-right-short"></i>{{ s.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

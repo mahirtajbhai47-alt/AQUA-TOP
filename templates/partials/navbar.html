@@ -1,0 +1,104 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-aqua sticky-top py-2">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'core:home' %}">
+      <span class="brand-drop"><i class="bi bi-droplet-fill"></i></span>AquaCare
+    </a>
+
+    <!-- Mobile hamburger opens an offcanvas menu that slides from the left -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-label="Open menu">
+      <i class="bi bi-list fs-2 text-primary"></i>
+    </button>
+
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:home' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:about' %}">About</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Products</a>
+          <ul class="dropdown-menu border-0 shadow rounded-3">
+            <li><a class="dropdown-item" href="{% url 'products:product_list' %}">All Products</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:category_list' %}">Browse Categories</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'products:product_list' %}?technology=RO%2BUV">RO + UV Purifiers</a></li>
+            <li><a class="dropdown-item" href="{% url 'products:product_list' %}?technology=ALKALINE">Alkaline RO</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button">Services</a>
+          <ul class="dropdown-menu border-0 shadow rounded-3">
+            <li><a class="dropdown-item" href="{% url 'services:service_list' %}">All Services</a></li>
+            <li><a class="dropdown-item" href="{% url 'services:book_installation' %}">Book Installation</a></li>
+            <li><a class="dropdown-item" href="{% url 'services:book_repair' %}">Request Repair</a></li>
+            <li><a class="dropdown-item" href="{% url 'services:book_maintenance' %}">Book Maintenance</a></li>
+            <li><a class="dropdown-item" href="{% url 'services:track' %}">Track Service</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'services:amc_plans' %}">AMC</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'core:contact' %}">Contact</a></li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'orders:cart_detail' %}" class="btn btn-light position-relative rounded-3 border" aria-label="View cart">
+          <i class="bi bi-cart3"></i>
+          {% if cart_count %}<span class="cart-badge">{{ cart_count }}</span>{% endif %}
+        </a>
+
+        {% if user.is_authenticated %}
+          <div class="dropdown">
+            <button class="btn btn-light border rounded-3 dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i>{{ user.first_name|default:user.username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-3">
+              <li><a class="dropdown-item" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:my_orders' %}">My Orders</a></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:my_services' %}">My Services</a></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:my_amc' %}">My AMC</a></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a></li>
+              {% if user.is_staff %}<li><a class="dropdown-item" href="/admin/">Admin Panel</a></li>{% endif %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-light border rounded-3">Login</a>
+        {% endif %}
+
+        <a href="{% url 'quotations:request_quote' %}" class="btn btn-aqua">Get a Quote</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile offcanvas menu -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title d-flex align-items-center" id="mobileMenuLabel">
+      <span class="brand-drop"><i class="bi bi-droplet-fill"></i></span>AquaCare
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-unstyled fs-5 d-grid gap-2">
+      <li><a class="nav-link" href="{% url 'core:home' %}">Home</a></li>
+      <li><a class="nav-link" href="{% url 'core:about' %}">About</a></li>
+      <li><a class="nav-link" href="{% url 'products:product_list' %}">Products</a></li>
+      <li><a class="nav-link" href="{% url 'products:category_list' %}">Categories</a></li>
+      <li><a class="nav-link" href="{% url 'services:service_list' %}">Services</a></li>
+      <li><a class="nav-link" href="{% url 'services:amc_plans' %}">AMC Plans</a></li>
+      <li><a class="nav-link" href="{% url 'services:track' %}">Track Service</a></li>
+      <li><a class="nav-link" href="{% url 'core:contact' %}">Contact</a></li>
+      <li><a class="nav-link" href="{% url 'orders:cart_detail' %}">Cart ({{ cart_count }})</a></li>
+    </ul>
+    <hr>
+    {% if user.is_authenticated %}
+      <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-aqua w-100 mb-2">My Dashboard</a>
+      <a href="{% url 'accounts:logout' %}" class="btn btn-light border w-100 mb-2">Logout</a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="btn btn-outline-aqua w-100 mb-2">Login</a>
+      <a href="{% url 'accounts:register' %}" class="btn btn-light border w-100 mb-2">Register</a>
+    {% endif %}
+    <a href="{% url 'quotations:request_quote' %}" class="btn btn-aqua w-100">Get a Quote</a>
+  </div>
+</div>

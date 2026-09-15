@@ -1,0 +1,29 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block dash_title %}My Service Requests{% endblock %}
+{% block dash_subtitle %}Track installations, repairs and maintenance visits.{% endblock %}
+
+{% block dash_content %}
+{% for sr in service_requests %}
+<div class="card-aqua p-4 mb-3">
+  <div class="d-flex justify-content-between flex-wrap mb-2">
+    <div>
+      <h2 class="h6 mb-1">{{ sr.reference }} — {{ sr.get_request_type_display }}</h2>
+      <div class="small text-muted-soft">Requested {{ sr.created_at|date:"d M Y" }} &middot; Preferred {{ sr.preferred_date|date:"d M Y" }} ({{ sr.preferred_time }})</div>
+    </div>
+    <span class="badge bg-{{ sr.status_color }} align-self-start">{{ sr.get_status_display }}</span>
+  </div>
+  <div class="row g-2 small mb-3">
+    <div class="col-md-4"><strong>Product:</strong> {{ sr.product.name|default:"—" }}</div>
+    <div class="col-md-4"><strong>Technician:</strong> {{ sr.technician.name|default:"Not assigned yet" }}</div>
+    <div class="col-md-4"><strong>Contact:</strong> {{ sr.technician.phone|default:sr.phone }}</div>
+  </div>
+  {% include "services/_status_timeline.html" with sr=sr %}
+</div>
+{% empty %}
+<div class="card-aqua p-5 text-center">
+  <i class="bi bi-tools fs-1 text-aqua"></i>
+  <p class="mt-3 text-muted-soft">No service requests yet.</p>
+  <a href="{% url 'services:book_repair' %}" class="btn btn-aqua">Book a service</a>
+</div>
+{% endfor %}
+{% endblock %}

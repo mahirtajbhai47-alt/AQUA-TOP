@@ -1,0 +1,29 @@
+# Optional Render Blueprint - lets you deploy with one click.
+services:
+  - type: web
+    name: aquacare
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_SSL_REQUIRE
+        value: "True"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aquacare-db
+          property: connectionString
+
+databases:
+  - name: aquacare-db
+    plan: free
+    databaseName: aquacare
+    user: aquacare

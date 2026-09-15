@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load humanize %}
+{% block dash_title %}My AMC{% endblock %}
+{% block dash_subtitle %}Your annual maintenance contracts.{% endblock %}
+
+{% block dash_content %}
+{% for sub in subscriptions %}
+<div class="card-aqua p-4 mb-3">
+  <div class="d-flex justify-content-between flex-wrap">
+    <div>
+      <h2 class="h6 mb-1">{{ sub.plan.name }} — {{ sub.reference }}</h2>
+      <div class="small text-muted-soft">{{ sub.start_date|date:"d M Y" }} to {{ sub.end_date|date:"d M Y" }}</div>
+    </div>
+    <div class="text-end">
+      <span class="badge bg-secondary">{{ sub.get_status_display }}</span>
+      <div class="fw-bold text-aqua mt-1">₹{{ sub.plan.price|floatformat:0|intcomma }}</div>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="card-aqua p-5 text-center">
+  <i class="bi bi-shield-check fs-1 text-aqua"></i>
+  <p class="mt-3 text-muted-soft">You don't have an active AMC yet.</p>
+  <a href="{% url 'services:amc_plans' %}" class="btn btn-aqua">View AMC plans</a>
+</div>
+{% endfor %}
+{% endblock %}

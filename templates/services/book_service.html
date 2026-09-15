@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'services:service_list' %}">Services</a></li>
+      <li class="breadcrumb-item active">{{ heading }}</li></ol></nav>
+    <h1>{{ heading }}</h1>
+    <p class="mb-0 opacity-75">Fill the form and we'll confirm your slot with a reference number.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <div class="form-panel">
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+            <div class="row g-3">
+              {% for field in form %}
+                <div class="col-md-{% if field.name in 'address,problem_description' %}12{% else %}6{% endif %}">
+                  <label class="form-label small fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field }}
+                  {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                  {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+            <button class="btn btn-aqua mt-4" type="submit"><i class="bi bi-calendar-check me-1"></i>Submit request</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card-aqua p-4 mb-4">
+          <h2 class="h6 mb-3">How it works</h2>
+          <ol class="small text-muted-soft ps-3 mb-0 d-grid gap-2">
+            <li>Submit this form — you get a reference number instantly.</li>
+            <li>Our coordinator confirms the slot by phone.</li>
+            <li>A technician is assigned and shown on your dashboard.</li>
+            <li>Track the status until the job is marked completed.</li>
+          </ol>
+        </div>
+        {% if company.phone %}
+        <div class="card-aqua p-4">
+          <h2 class="h6 mb-2">Urgent breakdown?</h2>
+          <p class="small text-muted-soft">Call our service desk directly.</p>
+          <a href="tel:{{ company.phone }}" class="btn btn-outline-aqua w-100"><i class="bi bi-telephone me-1"></i>{{ company.phone }}</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
