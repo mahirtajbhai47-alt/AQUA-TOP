@@ -1,0 +1,31 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block dash_title %}My Profile{% endblock %}
+{% block dash_subtitle %}Keep your contact and address details up to date for faster service.{% endblock %}
+
+{% block dash_content %}
+<div class="card-aqua p-4">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <h2 class="h6 mb-3">Account details</h2>
+    <div class="row g-3">
+      {% for field in user_form %}
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}{% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    <hr class="my-4">
+    <h2 class="h6 mb-3">Contact &amp; address</h2>
+    <div class="row g-3">
+      {% for field in profile_form %}
+        <div class="col-md-{% if field.name == 'address' %}12{% else %}4{% endif %}">
+          <label class="form-label small fw-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}{% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+    <button class="btn btn-aqua mt-4" type="submit">Save changes</button>
+  </form>
+</div>
+{% endblock %}

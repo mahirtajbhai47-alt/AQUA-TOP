@@ -1,0 +1,11 @@
+{# Visual progress of a service request. Expects: sr #}
+{% with s=sr.status %}
+<div class="timeline">
+  <div class="timeline-step done"><span class="timeline-dot"></span><div><strong>Pending</strong><div class="small text-muted-soft">Request received</div></div></div>
+  <div class="timeline-step {% if s != 'pending' and s != 'cancelled' %}done{% endif %}"><span class="timeline-dot"></span><div><strong>Confirmed</strong><div class="small text-muted-soft">Slot confirmed by our team</div></div></div>
+  <div class="timeline-step {% if s == 'assigned' or s == 'accepted' or s == 'on_the_way' or s == 'in_progress' or s == 'completed' %}done{% endif %}"><span class="timeline-dot"></span><div><strong>Technician assigned</strong><div class="small text-muted-soft">{{ sr.technician.name|default:"Awaiting assignment" }}</div></div></div>
+  <div class="timeline-step {% if s == 'on_the_way' or s == 'in_progress' or s == 'completed' %}done{% endif %}"><span class="timeline-dot"></span><div><strong>In progress</strong><div class="small text-muted-soft">Technician working on your unit</div></div></div>
+  <div class="timeline-step {% if s == 'completed' %}done{% endif %}"><span class="timeline-dot"></span><div><strong>Completed</strong><div class="small text-muted-soft">{% if sr.completed_at %}{{ sr.completed_at|date:"d M Y, H:i" }}{% else %}Pending{% endif %}</div></div></div>
+  {% if s == 'cancelled' %}<div class="timeline-step done"><span class="timeline-dot bg-danger"></span><div><strong class="text-danger">Cancelled</strong></div></div>{% endif %}
+</div>
+{% endwith %}

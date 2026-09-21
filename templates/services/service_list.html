@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item active">Services</li></ol></nav>
+    <h1>Water purifier services</h1>
+    <p class="mb-0 opacity-75">Installation, repair, maintenance and annual contracts by certified technicians.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      {% for service in services %}
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="card-aqua p-4 h-100 d-flex flex-column">
+          <div class="icon-circle"><i class="bi {{ service.icon|default:'bi-tools' }}"></i></div>
+          <h2 class="h5">{{ service.name }}</h2>
+          <p class="text-muted-soft small">{{ service.short_description }}</p>
+          {% if service.starting_price %}<div class="fw-bold text-aqua mb-3">Starting ₹{{ service.starting_price|floatformat:0|intcomma }}</div>{% endif %}
+          <div class="mt-auto d-grid gap-2">
+            <a href="{{ service.get_absolute_url }}" class="btn btn-outline-aqua btn-sm">Details</a>
+            <a href="{% url 'services:book_repair' %}" class="btn btn-aqua btn-sm">Book now</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <p class="text-muted-soft">Services will be listed here soon.</p>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4 mt-4">
+      <div class="col-md-4"><a href="{% url 'services:book_installation' %}" class="card-aqua p-4 d-block text-dark h-100">
+        <div class="icon-circle"><i class="bi bi-wrench-adjustable"></i></div>
+        <h2 class="h6">Book installation</h2><p class="small text-muted-soft mb-0">New purifier installed and commissioned at your site.</p></a></div>
+      <div class="col-md-4"><a href="{% url 'services:book_maintenance' %}" class="card-aqua p-4 d-block text-dark h-100">
+        <div class="icon-circle"><i class="bi bi-calendar-check"></i></div>
+        <h2 class="h6">Book maintenance</h2><p class="small text-muted-soft mb-0">Periodic servicing, filter checks and sanitisation.</p></a></div>
+      <div class="col-md-4"><a href="{% url 'services:book_repair' %}" class="card-aqua p-4 d-block text-dark h-100">
+        <div class="icon-circle"><i class="bi bi-tools"></i></div>
+        <h2 class="h6">Request repair</h2><p class="small text-muted-soft mb-0">Breakdown, leakage, low flow or taste issues — fixed fast.</p></a></div>
+    </div>
+  </div>
+</section>
+
+{% if amc_plans %}
+<section class="section bg-aqua-soft">
+  <div class="container">
+    <div class="text-center mb-5"><span class="section-label">AMC</span><h2>Annual maintenance contracts</h2></div>
+    <div class="row g-4 justify-content-center">
+      {% for plan in amc_plans %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card-aqua p-4 h-100 d-flex flex-column">
+          <h3 class="h5">{{ plan.name }}</h3>
+          <div class="my-2"><span class="display-6 fw-bold text-aqua">₹{{ plan.price|floatformat:0|intcomma }}</span>
+            <span class="text-muted-soft">/ {{ plan.duration_months }} months</span></div>
+          <ul class="list-unstyled small d-grid gap-2 mb-4">
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>{{ plan.number_of_services }} service visits</li>
+            {% for f in plan.feature_list %}<li><i class="bi bi-check-circle-fill text-success me-2"></i>{{ f }}</li>{% endfor %}
+          </ul>
+          <a href="{% url 'services:amc_subscribe_plan' plan.slug %}" class="btn btn-aqua mt-auto">Subscribe</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4"><a href="{% url 'services:amc_plans' %}" class="btn btn-outline-aqua">Compare all AMC plans</a></div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

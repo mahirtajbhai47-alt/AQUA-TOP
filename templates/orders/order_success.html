@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center"><div class="col-lg-7">
+      <div class="card-aqua p-5 text-center">
+        <i class="bi bi-check-circle-fill display-3 text-success"></i>
+        <h1 class="h3 mt-3">Thank you, {{ order.full_name }}!</h1>
+        <p class="text-muted-soft">Your order <strong>{{ order.order_id }}</strong> has been placed successfully.
+          Our team will call you to confirm delivery and installation.</p>
+        <div class="d-flex justify-content-between border-top pt-3 mt-3 small">
+          <span>Total payable</span><strong class="text-aqua">₹{{ order.total_amount|floatformat:0|intcomma }}</strong>
+        </div>
+        <div class="d-flex justify-content-between small"><span>Payment</span><span>{{ order.get_payment_method_display }}</span></div>
+        <div class="mt-4">
+          <a href="{% url 'orders:order_detail' order.order_id %}" class="btn btn-aqua me-2">View order</a>
+          <a href="{% url 'products:product_list' %}" class="btn btn-outline-aqua">Continue shopping</a>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</section>
+{% endblock %}

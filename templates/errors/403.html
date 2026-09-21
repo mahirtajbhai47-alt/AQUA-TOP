@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Access denied | AquaCare{% endblock %}
+{% block content %}
+<section class="section"><div class="container text-center">
+  <div class="display-1 fw-bold text-aqua">403</div>
+  <h1 class="h3">You don't have access to this page</h1>
+  <p class="text-muted-soft">Please login with an account that has permission.</p>
+  <a href="{% url 'accounts:login' %}" class="btn btn-aqua me-2">Login</a>
+  <a href="{% url 'core:home' %}" class="btn btn-outline-aqua">Go home</a>
+</div></section>
+{% endblock %}

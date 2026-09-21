@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static humanize %}
+
+{% block content %}
+<section class="bg-aqua-soft py-4">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-0">
+      <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+      <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+      <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol></nav>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="row g-5">
+      <!-- Gallery -->
+      <div class="col-lg-6">
+        <div class="card-aqua p-3 text-center">
+          <img id="productMainImage" class="img-fluid" style="max-height:430px;object-fit:contain"
+               src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/placeholder.svg' %}{% endif %}"
+               data-fallback="{% static 'images/placeholder.svg' %}"
+               alt="{{ product.name }} — {{ product.get_technology_display }} water purifier">
+        </div>
+        <div class="thumb-strip d-flex gap-2 mt-3 flex-wrap">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" data-full="{{ product.image.url }}" class="active" alt="{{ product.name }} main view">
+          {% endif %}
+          {% for img in product.images.all %}
+            <img src="{{ img.image.url }}" data-full="{{ img.image.url }}"
+                 alt="{{ img.alt_text|default:product.name }}">
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Summary + actions -->
+      <div class="col-lg-6">
+        <span class="section-label">{{ product.category.name }}</span>
+        <h1 class="h2 mb-2">{{ product.name }}</h1>
+        <p class="text-muted-soft">{{ product.short_description }}</p>
+
+        <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+          <span class="price fs-2">₹{{ product.final_price|floatformat:0|intcomma }}</span>
+          {% if product.has_discount %}
+            <span class="price-old fs-6">₹{{ product.price|floatformat:0|intcomma }}</span>
+            <span class="badge bg-danger">{{ product.discount_percent }}% OFF</span>
+          {% endif %}
+          {% if product.in_stock %}
+            <span class="badge bg-success-subtle text-success">In stock ({{ product.stock_quantity }})</span>
+          {% else %}
+            <span class="badge bg-danger-subtle text-danger">Out of stock</span>
+          {% endif %}
+        </div>
+
+        <ul class="list-unstyled small d-grid gap-2 mb-4">
+          <li><i class="bi bi-upc-scan text-aqua me-2"></i>Product code: <strong>{{ product.sku }}</strong></li>
+          <li><i class="bi bi-cpu text-aqua me-2"></i>Technology: <strong>{{ product.get_technology_display }}</strong></li>
+          {% if product.capacity %}<li><i class="bi bi-speedometer2 text-aqua me-2"></i>Capacity: <strong>{{ product.capacity }}</strong></li>{% endif %}
+          {% if product.storage_capacity %}<li><i class="bi bi-droplet text-aqua me-2"></i>Storage: <strong>{{ product.storage_capacity }}</strong></li>{% endif %}
+          {% if product.warranty %}<li><i class="bi bi-shield-check text-aqua me-2"></i>Warranty: <strong>{{ product.warranty }}</strong></li>{% endif %}
+        </ul>
+
+        <!-- Buy actions -->
+        <form method="post" action="{% url 'orders:cart_add' product.id %}" class="mb-3">
+          {% csrf_token %}
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="input-group" style="max-width:150px">
+              <button class="btn btn-light border" type="button" data-qty-action="minus" aria-label="Decrease quantity">−</button>
+              <input type="number" class="form-control text-center" name="quantity" value="1" min="1" aria-label="Quantity">
+              <button class="btn btn-light border" type="button" data-qty-action="plus" aria-label="Increase quantity">+</button>
+            </div>
+            <button class="btn btn-aqua" name="buy_now" value="1" {% if not product.in_stock %}disabled{% endif %}>
+              <i class="bi bi-lightning-charge me-1"></i>Buy Now
+            </button>
+            <button class="btn btn-outline-aqua" type="submit" {% if not product.in_stock %}disabled{% endif %}>
+              <i class="bi bi-cart-plus me-1"></i>Add to Cart
+            </button>
+          </div>
+        </form>
+
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'quotations:request_quote' %}?product={{ product.slug }}" class="btn btn-light border"><i class="bi bi-file-earmark-text me-1"></i>Request Quote</a>
+          <a href="{% url 'services:book_installation' %}?product={{ product.slug }}" class="btn btn-light border"><i class="bi bi-wrench-adjustable me-1"></i>Book Installation</a>
+          <a href="{% url 'services:book_repair' %}?product={{ product.slug }}" class="btn btn-light border"><i class="bi bi-tools me-1"></i>Book Service</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs: description / specs / features / installation -->
+    <div class="row mt-5"><div class="col-12">
+      <ul class="nav nav-pills gap-2 mb-4" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-desc" type="button">Description</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-specs" type="button">Specifications</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-features" type="button">Features</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-install" type="button">Installation &amp; warranty</button></li>
+      </ul>
+      <div class="tab-content card-aqua p-4">
+        <div class="tab-pane fade show active" id="tab-desc">
+          <h2 class="h5 mb-3">About {{ product.name }}</h2>
+          <div class="text-muted-soft">{{ product.description|linebreaks }}</div>
+        </div>
+        <div class="tab-pane fade" id="tab-specs">
+          <h2 class="h5 mb-3">Technical specifications</h2>
+          <table class="table spec-table align-middle">
+            <tbody>
+              <tr><th scope="row">Product code</th><td>{{ product.sku }}</td></tr>
+              <tr><th scope="row">Category</th><td>{{ product.category.name }}</td></tr>
+              <tr><th scope="row">Purification technology</th><td>{{ product.get_technology_display }}</td></tr>
+              <tr><th scope="row">Capacity</th><td>{{ product.capacity|default:"—" }}</td></tr>
+              <tr><th scope="row">Storage capacity</th><td>{{ product.storage_capacity|default:"—" }}</td></tr>
+              <tr><th scope="row">Dimensions</th><td>{{ product.dimensions|default:"—" }}</td></tr>
+              <tr><th scope="row">Weight</th><td>{{ product.weight|default:"—" }}</td></tr>
+              <tr><th scope="row">Warranty</th><td>{{ product.warranty|default:"—" }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tab-pane fade" id="tab-features">
+          <h2 class="h5 mb-3">Key features</h2>
+          {% if product.feature_list %}
+            <div class="row g-2">
+              {% for feature in product.feature_list %}
+                <div class="col-md-6"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ feature }}</div>
+              {% endfor %}
+            </div>
+          {% else %}<p class="text-muted-soft mb-0">Feature list coming soon.</p>{% endif %}
+        </div>
+        <div class="tab-pane fade" id="tab-install">
+          <h2 class="h5 mb-3">Installation information</h2>
+          <p class="text-muted-soft">{{ product.installation_info }}</p>
+          <p class="text-muted-soft mb-0"><strong>Warranty:</strong> {{ product.warranty|default:"Standard manufacturer warranty applies." }}</p>
+        </div>
+      </div>
+    </div></div>
+
+    {% if related_products %}
+    <div class="mt-5">
+      <h2 class="h4 mb-4">Related products</h2>
+      <div class="row g-4">
+        {% for product in related_products %}
+          <div class="col-sm-6 col-lg-3">{% include "partials/product_card.html" %}</div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% load static humanize %}
+{# Product card used on the homepage and listing pages #}
+<div class="card-aqua p-3 position-relative reveal">
+  {% if product.has_discount %}
+    <span class="badge-discount">{{ product.discount_percent }}% OFF</span>
+  {% endif %}
+  <a href="{{ product.get_absolute_url }}">
+    <img class="product-thumb"
+         src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/placeholder.svg' %}{% endif %}"
+         data-fallback="{% static 'images/placeholder.svg' %}"
+         alt="{{ product.name }} - {{ product.get_technology_display }} water purifier">
+  </a>
+  <div class="pt-3">
+    <span class="small text-uppercase fw-semibold text-aqua">{{ product.category.name }}</span>
+    <h3 class="h6 mt-1 mb-2">
+      <a class="text-dark stretched-link-none" href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+    </h3>
+    <p class="small text-muted-soft mb-2">{{ product.short_description|truncatechars:78 }}</p>
+    <ul class="list-unstyled small text-muted-soft mb-3">
+      <li><i class="bi bi-cpu me-1 text-aqua"></i>{{ product.get_technology_display }}</li>
+      {% if product.storage_capacity %}<li><i class="bi bi-droplet me-1 text-aqua"></i>{{ product.storage_capacity }} storage</li>{% endif %}
+      {% if product.warranty %}<li><i class="bi bi-shield-check me-1 text-aqua"></i>{{ product.warranty }}</li>{% endif %}
+    </ul>
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        <span class="price">₹{{ product.final_price|floatformat:0|intcomma }}</span>
+        {% if product.has_discount %}<span class="price-old">₹{{ product.price|floatformat:0|intcomma }}</span>{% endif %}
+      </div>
+      {% if product.in_stock %}
+        <span class="badge bg-success-subtle text-success">In stock</span>
+      {% else %}
+        <span class="badge bg-danger-subtle text-danger">Out of stock</span>
+      {% endif %}
+    </div>
+    <div class="d-grid gap-2 mt-3">
+      <a href="{{ product.get_absolute_url }}" class="btn btn-aqua btn-sm">View Details</a>
+      <form method="post" action="{% url 'orders:cart_add' product.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="1">
+        <button class="btn btn-outline-aqua btn-sm w-100" {% if not product.in_stock %}disabled{% endif %}>
+          <i class="bi bi-cart-plus me-1"></i>Add to Cart
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

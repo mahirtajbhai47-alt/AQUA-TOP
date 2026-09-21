@@ -1,0 +1,27 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load humanize %}
+{% block dash_title %}My Quotations{% endblock %}
+{% block dash_subtitle %}Quotation requests and the amounts we've quoted.{% endblock %}
+
+{% block dash_content %}
+<div class="card-aqua p-4">
+{% if quotations %}
+<div class="table-responsive"><table class="table align-middle small mb-0">
+  <thead><tr><th>Reference</th><th>Item</th><th>Qty</th><th>Location</th><th>Quoted</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for q in quotations %}
+    <tr>
+      <td class="fw-semibold">{{ q.reference }}</td>
+      <td>{% if q.product %}{{ q.product.name }}{% elif q.service %}{{ q.service.name }}{% else %}—{% endif %}</td>
+      <td>{{ q.quantity }}</td>
+      <td>{{ q.location }}</td>
+      <td>{% if q.quoted_amount %}₹{{ q.quoted_amount|floatformat:0|intcomma }}{% else %}—{% endif %}</td>
+      <td><span class="badge bg-{{ q.status_color }}">{{ q.get_status_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody></table></div>
+{% else %}
+  <p class="text-muted-soft mb-0 text-center">No quotation requests yet. <a href="{% url 'quotations:request_quote' %}" class="text-aqua">Request one</a>.</p>
+{% endif %}
+</div>
+{% endblock %}

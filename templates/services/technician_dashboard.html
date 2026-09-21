@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Technician dashboard</h1>
+    <p class="mb-0 opacity-75">{{ technician.name }} &middot; {{ technician.area }} &middot; {{ technician.specialization }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-3 mb-4">
+      <div class="col-md-4"><div class="card-aqua p-4"><div class="small text-muted-soft">Total jobs</div><div class="h3 mb-0 text-aqua">{{ jobs.count }}</div></div></div>
+      <div class="col-md-4"><div class="card-aqua p-4"><div class="small text-muted-soft">Open jobs</div><div class="h3 mb-0 text-aqua">{{ open_jobs.count }}</div></div></div>
+      <div class="col-md-4"><div class="card-aqua p-4"><div class="small text-muted-soft">Experience</div><div class="h3 mb-0 text-aqua">{{ technician.experience_years }} yrs</div></div></div>
+    </div>
+
+    {% for job in jobs %}
+    <div class="card-aqua p-4 mb-3">
+      <div class="d-flex justify-content-between flex-wrap mb-2">
+        <div>
+          <h2 class="h6 mb-1">{{ job.reference }} — {{ job.get_request_type_display }}</h2>
+          <div class="small text-muted-soft">Scheduled {{ job.preferred_date|date:"d M Y" }} ({{ job.preferred_time }})</div>
+        </div>
+        <span class="badge bg-{{ job.status_color }} align-self-start">{{ job.get_status_display }}</span>
+      </div>
+      <div class="row g-2 small">
+        <div class="col-md-4"><strong>Customer:</strong> {{ job.name }}</div>
+        <div class="col-md-4"><strong>Phone:</strong> <a href="tel:{{ job.phone }}">{{ job.phone }}</a></div>
+        <div class="col-md-4"><strong>Product:</strong> {{ job.product.name|default:"—" }}</div>
+        <div class="col-12"><strong>Address:</strong> {{ job.address }} {{ job.city }} {{ job.pincode }}</div>
+        {% if job.problem_description %}<div class="col-12"><strong>Problem:</strong> {{ job.problem_description }}</div>{% endif %}
+      </div>
+      <form method="post" action="{% url 'services:technician_update_status' job.pk %}" class="d-flex gap-2 mt-3" style="max-width:420px">
+        {% csrf_token %}
+        {{ status_form.status }}
+        <button class="btn btn-aqua">Update status</button>
+      </form>
+    </div>
+    {% empty %}
+      <div class="card-aqua p-5 text-center text-muted-soft">No jobs assigned to you yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>{% block dash_title %}My Account{% endblock %}</h1>
+    <p class="mb-0 opacity-75">{% block dash_subtitle %}Manage your orders, services and profile.{% endblock %}</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-3">{% include "dashboard/_sidebar.html" %}</div>
+      <div class="col-lg-9">{% block dash_content %}{% endblock %}</div>
+    </div>
+  </div>
+</section>
+{% endblock %}
